@@ -1,11 +1,11 @@
 @echo off
 echo ========================================================
-echo        Pushing Security Updates to GitHub
+echo        Pushing Updates to GitHub
 echo ========================================================
 echo.
-echo 1. Committing Security Changes...
+echo 1. Committing Changes (Logout & Timer)...
 git add .
-git commit -m "Implement Security: API Key Authentication"
+git commit -m "Add Logout Button and 10-min Inactivity Timer"
 echo.
 echo 2. Pushing to GitHub...
 echo.
@@ -14,7 +14,7 @@ echo.
 if %errorlevel% neq 0 (
     echo [ERROR] Push failed.
 ) else (
-    echo [SUCCESS] Security updates pushed!
+    echo [SUCCESS] Updates pushed!
     echo Render will rebuild automatically.
 )
 echo.

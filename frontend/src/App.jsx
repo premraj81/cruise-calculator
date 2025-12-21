@@ -14,6 +14,43 @@ function App() {
   const [dates, setDates] = useState(['']);
   const [results, setResults] = useState({});
 
+  // Auto-logout on inactivity (10 minutes)
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    let timeout;
+    const resetTimer = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        setIsLoggedIn(false);
+        setApiToken('');
+        setResults({});
+        setDates(['']);
+      }, 10 * 60 * 1000); // 10 minutes
+    };
+
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+    window.addEventListener('click', resetTimer);
+
+    resetTimer(); // Start timer
+
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('mousemove', resetTimer);
+      window.removeEventListener('keydown', resetTimer);
+      window.removeEventListener('click', resetTimer);
+    };
+  }, [isLoggedIn]);
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setApiToken('');
+    setResults({});
+    setDates(['']);
+  };
+
+
   if (!isLoggedIn) {
     return <LoginScreen onLogin={(user, pass) => {
       // Basic client-side check + Store token for backend
@@ -111,6 +148,23 @@ function App() {
           Cruise Ship Window Calculator
         </h2>
       </header>
+      <button
+        onClick={handleLogout}
+        style={{
+          position: 'absolute',
+          top: '2rem',
+          right: '2rem',
+          padding: '0.5rem 1rem',
+          backgroundColor: '#ef4444',
+          color: 'white',
+          border: 'none',
+          borderRadius: '0.375rem',
+          fontWeight: '600',
+          cursor: 'pointer'
+        }}
+      >
+        Logout
+      </button>
 
       <div className="controls">
         <div className="control-group">
