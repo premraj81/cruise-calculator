@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from tides import TideRepository
@@ -25,7 +25,15 @@ if not os.path.exists(DATA_PATH):
 repo = TideRepository(DATA_PATH)
 calculator = WindowCalculator(repo)
 
-@app.get("/api/tides")
+# Security: Get Password from Env or fallback
+APP_PASSWORD = os.getenv("APP_PASSWORD", "CRUISE@ship25")
+
+async def verify_token(x_auth_token: str = Header(..., alias="X-Auth-Token")):
+    if x_auth_token != APP_PASSWORD:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return x_auth_token
+
+@app.get("/api/tides", dependencies=[Depends(verify_token)])
 def get_tides(date: str = Query(..., description="YYYY-MM-DD")):
     try:
         dt = datetime.strptime(date, "%Y-%m-%d").date()
@@ -38,7 +46,7 @@ def get_tides(date: str = Query(..., description="YYYY-MM-DD")):
         for e in events
     ]
 
-@app.get("/api/windows")
+@app.get("/api/windows", dependencies=[Depends(verify_token)])
 def get_windows(
     ship_type: str = Query(..., regex="^(princess|ovation)$", description="princess or ovation"),
     movement: str = Query(..., regex="^(arrival|departure)$", description="arrival or departure"),

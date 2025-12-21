@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [apiToken, setApiToken] = useState(''); // Store password as API Key
   const [shipType, setShipType] = useState('princess');
   const [movement, setMovement] = useState('arrival');
   const [dates, setDates] = useState(['']);
@@ -15,7 +16,9 @@ function App() {
 
   if (!isLoggedIn) {
     return <LoginScreen onLogin={(user, pass) => {
+      // Basic client-side check + Store token for backend
       if (user.trim() === 'PortOtago' && pass.trim() === 'CRUISE@ship25') {
+        setApiToken(pass.trim());
         setIsLoggedIn(true);
       } else {
         alert('Invalid Credentials');
@@ -46,11 +49,6 @@ function App() {
     setDates(newDates);
     const newResults = { ...results };
     delete newResults[index];
-    // We need to shift results down? No, results is keyed by index. 
-    // Actually, if we remove index 0, index 1 becomes index 0. 
-    // The simplified results object logic might break. 
-    // Better to just clear all results on remove for safety or rebuild.
-    // For now, let's just clear results on remove to avoid mismatch.
     setResults({});
   };
 
@@ -66,7 +64,8 @@ function App() {
 
     try {
       const response = await axios.get(`${API_URL}/windows`, {
-        params: { ship_type: shipType, movement: movement, date: date }
+        params: { ship_type: shipType, movement: movement, date: date },
+        headers: { 'X-Auth-Token': apiToken }
       });
       setResults(prev => ({
         ...prev,
@@ -79,6 +78,8 @@ function App() {
         msg = error.response.data.detail;
       } else if (error.response && error.response.status === 404) {
         msg = "No data for this date.";
+      } else if (error.response && error.response.status === 401) {
+        msg = "Unauthorized (Invalid API Key)";
       }
       setResults(prev => ({
         ...prev,
