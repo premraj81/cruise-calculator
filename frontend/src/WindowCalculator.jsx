@@ -1,11 +1,30 @@
-import React from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { calculateCruiseWindows } from './cruiseRules';
 
-// Constants
-// Use environment variable for API URL in production, fallback to localhost for dev
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+function WindowCalculator({ shipType, setShipType, movement, setMovement, dates, setDates, results, setResults }) {
 
-function WindowCalculator({ shipType, setShipType, movement, setMovement, dates, setDates, results, setResults, apiToken }) {
+    // Load Tides Data locally
+    const [tideData, setTideData] = useState([]);
+    const [loadingTides, setLoadingTides] = useState(true);
+    const [tideError, setTideError] = useState(null);
+
+    useEffect(() => {
+        fetch('/tides_pc.json')
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to load tides");
+                return res.json();
+            })
+            .then(data => {
+                setTideData(data);
+                setLoadingTides(false);
+            })
+            .catch(err => {
+                console.error("Error loading tides_pc.json:", err);
+                setTideError("Failed to load tide database.");
+                setLoadingTides(false);
+            });
+    }, []);
+
     const handleToggleChange = (type, value) => {
         if (type === 'ship') setShipType(value);
         if (type === 'movement') setMovement(value);
@@ -37,38 +56,35 @@ function WindowCalculator({ shipType, setShipType, movement, setMovement, dates,
         setResults({});
     };
 
-    const calculateRow = async (index) => {
+    const calculateRow = (index) => {
         const date = dates[index];
         if (!date) return;
 
-        try {
-            const response = await axios.get(`${API_URL}/windows`, {
-                params: { ship_type: shipType, movement: movement, date: date },
-                headers: { 'X-Auth-Token': apiToken }
-            });
-            setResults(prev => ({
-                ...prev,
-                [index]: response.data
-            }));
-        } catch (error) {
-            console.error(`Error fetching for index ${index}`, error);
-            let msg = "Error fetching data.";
-            if (error.response && error.response.data && error.response.data.detail) {
-                msg = error.response.data.detail;
-            } else if (error.response && error.response.status === 404) {
-                msg = "No data for this date.";
-            } else if (error.response && error.response.status === 401) {
-                msg = "Unauthorized (Invalid API Key)";
-            }
-            setResults(prev => ({
-                ...prev,
-                [index]: { error: msg }
-            }));
+        if (loadingTides) {
+            alert("Tide database still loading...");
+            return;
         }
+        if (tideError) {
+            setResults(prev => ({
+                ...prev,
+                [index]: { error: tideError }
+            }));
+            return;
+        }
+
+        // Perform Calculation Locally
+        const result = calculateCruiseWindows(tideData, shipType, movement, date);
+
+        setResults(prev => ({
+            ...prev,
+            [index]: result
+        }));
     };
 
     return (
         <div className="window-calculator">
+            {loadingTides && <div style={{ textAlign: 'center', padding: '10px', color: '#666' }}>Loading Tide Database...</div>}
+
             <div className="controls">
                 <div className="control-group">
                     <label className="control-label">Ship Type</label>
