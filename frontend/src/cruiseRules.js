@@ -81,8 +81,12 @@ export function calculateCruiseWindows(tideEvents, shipType, movement, targetDat
                 const closeTime = roundTime(rawClose, 'down');
 
                 if (closeTime > openTime) {
-                    windows.appendIfValid(i + 1, openTime, closeTime,
-                        `HW at ${formatTime(hw.dt)} -> LW at ${formatTime(nextLw.dt)}`);
+                    windows.push({
+                        window_id: i + 1,
+                        open: toLocalISO(openTime),
+                        close: toLocalISO(closeTime),
+                        basis: `HW at ${formatTime(hw.dt)} -> LW at ${formatTime(nextLw.dt)}`
+                    });
                 }
             }
         });
@@ -115,22 +119,16 @@ export function calculateCruiseWindows(tideEvents, shipType, movement, targetDat
                 const closeTime = roundTime(rawClose, 'down');
 
                 if (closeTime > openTime) {
-                    windows.appendIfValid(i + 1, openTime, closeTime,
-                        `LW at ${formatTime(lw.dt)} -> Next HW at ${formatTime(nextHw.dt)}`);
+                    windows.push({
+                        window_id: i + 1,
+                        open: toLocalISO(openTime),
+                        close: toLocalISO(closeTime),
+                        basis: `LW at ${formatTime(lw.dt)} -> Next HW at ${formatTime(nextHw.dt)}`
+                    });
                 }
             }
         });
     }
-
-    // Helper to safely add
-    windows.appendIfValid = function (id, open, close, basis) {
-        this.push({
-            window_id: id,
-            open: toLocalISO(open),
-            close: toLocalISO(close),
-            basis: basis
-        });
-    };
 
     if (windows.length === 0) {
         return {
