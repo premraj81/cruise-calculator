@@ -187,9 +187,7 @@ function WindowCalculator({ shipType, setShipType, movement, setMovement, dates,
 function ResultDisplay({ result, config }) {
     if (!result) return null;
     if (result.error) return <p className="msg-error">{result.error}</p>;
-    if (result.message && (!result.windows || result.windows.length === 0)) {
-        return <p className="msg-info">{result.message}</p>;
-    }
+
 
     const targetDateStr = result.date;
     const shipText = config.shipType === 'princess' ? 'Princess Class' : 'Ovation Class';

@@ -2,6 +2,8 @@
 // Logic ported from backend/calculator.py to run purely in frontend
 
 export function calculateCruiseWindows(tideEvents, shipType, movement, targetDateStr) {
+    console.log("Calc Cruise for:", targetDateStr, shipType, movement);
+
     if (!tideEvents || tideEvents.length === 0) {
         return {
             date: targetDateStr,
@@ -14,6 +16,7 @@ export function calculateCruiseWindows(tideEvents, shipType, movement, targetDat
     // Python code finds "daily_events" first.
     // Tides JSON dates are "YYYY-MM-DD HH:mm".
     const dailyEvents = tideEvents.filter(e => e.date && e.date.startsWith(targetDateStr));
+    console.log("Daily events found:", dailyEvents.length);
 
     if (dailyEvents.length === 0) {
         return {
@@ -33,6 +36,7 @@ export function calculateCruiseWindows(tideEvents, shipType, movement, targetDat
 
     const enrichedDaily = dailyEvents.map(enrich);
     const allEnriched = tideEvents.map(enrich); // Need full list for "Next Event" search
+    console.log("Enriched Daily Types:", enrichedDaily.map(e => e.type));
 
     const st = shipType.toLowerCase();
     const mv = movement.toLowerCase();
