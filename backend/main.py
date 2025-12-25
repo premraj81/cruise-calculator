@@ -7,9 +7,15 @@ import os
 
 app = FastAPI(title="Cruise Ship Window Calculator")
 
+# CORS Configuration
+# Must specify exact origins for allow_credentials=True to work in production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://portotago-tools.onrender.com",  # Your Render Frontend
+        "http://localhost:5173",                 # Local Vite Dev
+        "http://localhost:3000"                  # Alternate Local
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
