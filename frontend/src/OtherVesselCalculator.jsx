@@ -1,5 +1,6 @@
-// Refreshed
 import React, { useState, useEffect } from 'react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { UKCColumn } from './components/UKCColumn';
 import TideDetails from './components/TideDetails';
 
@@ -285,6 +286,110 @@ function OtherVesselCalculator() {
         }
     }, [arrivalDate, arrivalTime, tideData]);
 
+    const handleGeneratePDF = () => {
+        try {
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFontSize(18);
+            doc.setTextColor(30, 58, 138);
+            doc.text("Port Otago - Marine Operations Report", 14, 20);
+
+            doc.setFontSize(14);
+            doc.setTextColor(180, 83, 9); // Amber/Bronze
+            doc.text("Environmental Parameters & UKC", 14, 28);
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 35);
+
+            // Vessel Details
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text("Vessel & Port Details", 14, 45);
+
+            autoTable(doc, {
+                startY: 48,
+                head: [['Parameter', 'Value', 'Parameter', 'Value']],
+                body: [
+                    ['Vessel Name', shipName || 'N/A', 'Port', selectedPort === 'chalmers' ? 'Port Chalmers' : 'Dunedin'],
+                    ['Type', vesselType.toUpperCase(), 'Berth', selectedBerth ? selectedBerth.toUpperCase() : 'N/A'],
+                    ['Movement', movement.toUpperCase(), 'Side', 'N/A'], // Side not tracked here?
+                    ['LOA', `${loa} m`, 'Draft', `${draft} m`],
+                    ['Breadth', `${breadth} m`, 'Tugs', rules ? rules.tugs : 'N/A']
+                ],
+                theme: 'grid',
+                headStyles: { fillColor: [30, 58, 138] },
+                columnStyles: { 0: { fontStyle: 'bold' }, 2: { fontStyle: 'bold' } }
+            });
+
+            // Rules
+            let finalY = doc.lastAutoTable.finalY + 15;
+            doc.text("Port Requirements & Environmental Limits", 14, finalY);
+
+            if (rules) {
+                const rulesData = [
+                    ['Wind Limit', rules.wind || 'N/A'],
+                    ['Tide Requirement', rules.tide || 'N/A'],
+                    ['Min UKC Requirement', rules.ukcRequirement || 'N/A']
+                ];
+                if (rules.remarks && rules.remarks.length > 0) {
+                    rulesData.push(['Remarks', rules.remarks.join('; ')]);
+                }
+
+                autoTable(doc, {
+                    startY: finalY + 3,
+                    head: [['Rule', 'Requirement']],
+                    body: rulesData,
+                    theme: 'striped',
+                    headStyles: { fillColor: [180, 83, 9] }
+                });
+            } else {
+                doc.setFontSize(11);
+                doc.setTextColor(100);
+                doc.text("Rules not loaded or applicable.", 14, finalY + 5);
+            }
+
+            // UKC Calculation
+            finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 15 : finalY + 20;
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+            doc.text("Under Keel Clearance (UKC) Calculation", 14, finalY);
+
+            // Calculation Data
+            // Columns: Area, Chart Depth, Tide, Total, Draft, Safety, Net UKC
+            const ukcRows = [
+                ['Channel', depthChannel, tideHeight, ukcChannel.totalDepth.toFixed(2), draft, ukcChannel.safetyLabel, ukcChannel.ukc.toFixed(2)],
+                ['Basin', depthBasin, tideHeight, ukcBasin.totalDepth.toFixed(2), draft, ukcBasin.safetyLabel, ukcBasin.ukc.toFixed(2)],
+                ['Berth', depthBerth, tideHeight, ukcBerth.totalDepth.toFixed(2), draft, ukcBerth.safetyLabel, ukcBerth.ukc.toFixed(2)]
+            ];
+
+            autoTable(doc, {
+                startY: finalY + 3,
+                head: [['Area', 'Chart Depth', 'Tide', 'Total', 'Draft', 'Safety', 'Net UKC']],
+                body: ukcRows,
+                theme: 'grid',
+                headStyles: { fillColor: [15, 118, 110] }, // Teal
+                columnStyles: { 6: { fontStyle: 'bold', textColor: [0, 0, 0] } } // Net UKC bold
+            });
+
+            // Highlight Breaches? 
+            // We could check if UKC < 0 and color red, but autoTable logic for cell color is complex in simple array. 
+            // Simple approach: Add warning text below.
+
+            if (ukcChannel.ukc < 0 || ukcBasin.ukc < 0 || ukcBerth.ukc < 0) {
+                doc.setTextColor(220, 38, 38);
+                doc.setFontSize(12);
+                doc.text("WARNING: Negative UKC Detected!", 14, doc.lastAutoTable.finalY + 10);
+            }
+
+            doc.save("environmental_ukc_report.pdf");
+        } catch (e) {
+            console.error("PDF Fail", e);
+            alert("Failed to generate PDF");
+        }
+    };
+
     return (
         <div style={{ padding: '0.5rem', fontFamily: 'Inter, sans-serif', maxWidth: '98vw', margin: '0 auto' }}>
             <h2 style={{ color: '#1e3a8a', marginTop: 0, marginBottom: '1rem', textAlign: 'center', fontSize: '1.5rem' }}>Environmental Parameters and UKC Calculation</h2>
@@ -408,6 +513,10 @@ function OtherVesselCalculator() {
                                 <UKCColumn title="Berth" inputDepth={depthBerth} setInputDepth={setDepthBerth} tideHeight={tideHeight} setTideHeight={setTideHeight} calculation={ukcBerth} shipDraft={shipDraft} compact={true} />
                             </div>
                         </div>
+
+                        <button onClick={handleGeneratePDF} style={{ padding: '0.75rem', background: '#d97706', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+                            📄 Generate PDF Report
+                        </button>
                     </div>
 
                     <div style={{ gridColumn: '1 / -1' }}>
