@@ -1,0 +1,179 @@
+{
+    "version": "1.0",
+    "updated": "2025-10-25",
+    "ports": {
+        "chalmers": {
+            "default": {
+                "wind": "Max 40 knots",
+                "ukc": "10% Draft or 0.8m",
+                "tide": "Flood or Ebb",
+                "tugs": "Arr: 2 Tugs, Dep: 2 Tugs"
+            },
+            "types": {
+                "fishing": {
+                    "loa_max": 110,
+                    "wind": "Max 40 knots",
+                    "ukc": "1.0m",
+                    "tugs": "Arr: 1 Tug, Dep: 1 Tug (None if BT)",
+                    "remarks": [
+                        "Fishing/LPG < 110m Rules."
+                    ]
+                },
+                "lpg": {
+                    "loa_max": 110,
+                    "wind": "Max 40 knots",
+                    "ukc": "1.0m",
+                    "tugs": "Arr: 1 Tug, Dep: 1 Tug (None if BT)",
+                    "remarks": [
+                        "Fishing/LPG < 110m Rules."
+                    ]
+                },
+                "tanker": {
+                    "wind": "Max 40 knots",
+                    "ukc": "1.25m or greater",
+                    "tugs": "Arr: 2 Tugs, Dep: 2 Tugs (1 if BT)"
+                },
+                "log": {
+                    "wind": "Max 40 knots",
+                    "ukc": "10% of Draught",
+                    "tugs": "Arr: 2 Tugs, Dep: 2 Tugs"
+                },
+                "container": {
+                    "wind": "Max 40 knots",
+                    "ukc": "10% of Draught",
+                    "rules": [
+                        {
+                            "max_loa": 135,
+                            "bt": true,
+                            "tugs": "Arr: 1, Dep: 1"
+                        },
+                        {
+                            "max_loa": 225,
+                            "bt": true,
+                            "tugs": "Arr: 2, Dep: 1"
+                        },
+                        {
+                            "default": true,
+                            "tugs": "Arr: 2, Dep: 2"
+                        }
+                    ]
+                },
+                "rio": {
+                    "wind": "Max 25 knots (gusts to 35)",
+                    "tugs": "Arr: 2 Tugs, Dep: 2 Tugs",
+                    "remarks": [
+                        "Deep Draft/Rio Rules apply (Ebb Tide restrictions)."
+                    ],
+                    "special_conditions": "rio_wide_beam"
+                }
+            }
+        },
+        "dunedin": {
+            "default": {
+                "wind": "Standard",
+                "ukc": "Chan 1.0m / Basin 0.6m",
+                "tide": "Standard",
+                "tugs": "Standard (Check Manual)"
+            },
+            "types": {
+                "tanker": {
+                    "berth": "oil_jetty",
+                    "rules": [
+                        {
+                            "max_loa": 150,
+                            "wind": "Head 35k, Tail(Stem) 30k, Tail(Follow) 25k",
+                            "ukc": "Chan 1.25m / Basin 0.9m",
+                            "tugs": "Arr: 2 (1 if BT), Dep: 1"
+                        },
+                        {
+                            "min_loa": 150.01,
+                            "wind": "Head 35k, Tail(Stem) 30k, Tail(Follow) 25k",
+                            "ukc": "Chan 1.25m / Basin 0.9m",
+                            "tugs": "Arr: 2, Dep: 2 (1 if BT)",
+                            "tide": "Restricted (HW-2.5h)",
+                            "remarks": [
+                                "Daylight Only",
+                                "Tug secure centre-lead-aft to Halfway Is."
+                            ]
+                        }
+                    ]
+                },
+                "log": {
+                    "wind": "Head 35k, Tail(Stem) 30k, Tail(Follow) 25k",
+                    "ukc": "Chan 1.25m / Basin 0.6m",
+                    "rules": [
+                        {
+                            "berth": "ravy",
+                            "tide": "Arr: HW+/-1h, Dep: HW(PC)-1h",
+                            "remarks": [
+                                "Ravy Berth Rules",
+                                "Trim: 0.5m-2.5m Astern",
+                                "Daylight Only (Victoria Ch)"
+                            ]
+                        },
+                        {
+                            "min_beam": 30.2,
+                            "tugs": "Arr: 2, Dep: 2",
+                            "tide": "Arr: Flood/Ebb, Dep: Flood Only",
+                            "remarks": [
+                                "Wide Beam (>30.2m)",
+                                "Tug secure centre-lead-aft"
+                            ]
+                        },
+                        {
+                            "max_loa": 180,
+                            "tugs": "Arr: 2, Dep: 2",
+                            "ukc": "Chan 1.0m (<150m) or 1.25m / Basin 0.6m",
+                            "remarks": [
+                                "Standard Log/Bulk"
+                            ]
+                        },
+                        {
+                            "min_loa": 180,
+                            "max_loa": 185,
+                            "remarks": [
+                                "Subject to ORC Hazman Assessment"
+                            ]
+                        }
+                    ]
+                },
+                "fishing": {
+                    "max_loa": 104,
+                    "tugs": "1 Tug (None if BT)",
+                    "tugs_large": "Arr: 2, Dep: 1",
+                    "wind": "Max 35 kts",
+                    "ukc": "Chan 1.0m / Basin 0.6m"
+                },
+                "lpg": {
+                    "max_loa": 110,
+                    "tugs": "Arr: 1, Dep: 1 (None if BT, unless wind > 15k)",
+                    "wind": "Max 35 kts",
+                    "ukc": "Chan 1.25m / Basin 0.9m"
+                },
+                "cruise": {
+                    "rules": [
+                        {
+                            "max_loa": 110,
+                            "wind": "Max 25 kts",
+                            "tugs": "1 Tug (None if BT)"
+                        },
+                        {
+                            "min_loa": 110,
+                            "max_loa": 150,
+                            "wind": "Max 20 kts",
+                            "tugs": "1 Tug (if Swing required)",
+                            "remarks": [
+                                "Max 150m U/H"
+                            ]
+                        }
+                    ],
+                    "restrictions": {
+                        "berth": "xy",
+                        "allowed": false,
+                        "message": "RESTRICTED: Cruise Vessels not permitted on X/Y Berth."
+                    }
+                }
+            }
+        }
+    }
+}
