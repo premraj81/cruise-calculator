@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 // Constants for Geometry
 const BASIN_POINTS = [
@@ -415,12 +415,6 @@ function BerthCalculator() {
         try {
             const doc = new jsPDF();
 
-            // Check if autotable loaded
-            if (typeof doc.autoTable !== 'function') {
-                alert("PDF Generation Error: Table plugin not loaded. Please try again.");
-                return;
-            }
-
             // Header
             doc.setFontSize(20);
             doc.setTextColor(30, 58, 138); // Dark Blue
@@ -434,7 +428,7 @@ function BerthCalculator() {
             doc.setTextColor(0);
             doc.text("CT Berth - Vessel Details", 14, 40);
 
-            doc.autoTable({
+            autoTable(doc, {
                 startY: 45,
                 head: [['Vessel Name', 'LOA (m)', 'Beam (m)', 'Stern Pos', 'Bow Pos', 'Side']],
                 body: [[ctShip.name, ctShip.length, ctShip.beam, `${ctShip.sternPos} m`, `${ctBowPos.toFixed(1)} m`, ctShip.sideToWharf]],
@@ -446,7 +440,7 @@ function BerthCalculator() {
             let finalY = doc.lastAutoTable.finalY + 15;
             doc.text("Beach Street Wharf - Vessel Details", 14, finalY);
             if (beachShip.active) {
-                doc.autoTable({
+                autoTable(doc, {
                     startY: finalY + 5,
                     head: [['Vessel Name', 'LOA (m)', 'Beam (m)', 'Stern Pos', 'Bow Pos', 'Side']],
                     body: [[beachShip.name, beachShip.length, beachShip.beam, `${beachShip.sternPos} m`, `${beachBowPos.toFixed(1)} m`, beachShip.sideToWharf]],
@@ -476,7 +470,7 @@ function BerthCalculator() {
                 metricsData.push(['Inter-Ship Clearance', metrics.distBetweenShips ? `${metrics.distBetweenShips.toFixed(2)} m` : 'N/A']);
             }
 
-            doc.autoTable({
+            autoTable(doc, {
                 startY: finalY + 5,
                 head: [['Metric', 'Value']],
                 body: metricsData,
@@ -493,9 +487,11 @@ function BerthCalculator() {
             doc.save("berth_report.pdf");
         } catch (e) {
             console.error("PDF Fail:", e);
-            alert("Failed to generate PDF. Check console for details.");
+            alert(`Failed to generate PDF: ${e.message}`);
         }
     };
+
+
 
     return (
         <div className="berth-calculator" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', fontFamily: 'Inter, sans-serif', alignItems: 'center' }}>

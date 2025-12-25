@@ -287,7 +287,7 @@ function OtherVesselCalculator() {
 
     return (
         <div style={{ padding: '0.5rem', fontFamily: 'Inter, sans-serif', maxWidth: '98vw', margin: '0 auto' }}>
-            <h2 style={{ color: '#1e3a8a', marginTop: 0, marginBottom: '1rem', textAlign: 'center', fontSize: '1.5rem' }}>Other Vessel Window Calculator</h2>
+            <h2 style={{ color: '#1e3a8a', marginTop: 0, marginBottom: '1rem', textAlign: 'center', fontSize: '1.5rem' }}>Environmental Parameters and UKC Calculation</h2>
 
             {/* Port Selection */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2rem' }}>
@@ -420,12 +420,73 @@ function OtherVesselCalculator() {
 }
 
 // Helpers
+
 function PortButton({ label, active, onClick }) {
-    return <button onClick={onClick} style={{ padding: '1rem 2rem', fontSize: '1.1rem', fontWeight: '700', borderRadius: '8px', border: active ? '2px solid #1e3a8a' : '1px solid #cbd5e1', background: active ? '#1e3a8a' : 'white', color: active ? 'white' : '#64748b', cursor: 'pointer', transition: 'all 0.2s' }}>{label}</button>;
+    const activeStyle = {
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)',
+        color: '#fcd34d', // Amber 300
+        border: '2px solid #d97706', // Amber 600
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
+    };
+    const inactiveStyle = {
+        background: 'white',
+        color: '#475569',
+        border: '1px solid #cbd5e1',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+    };
+
+    return (
+        <button
+            onClick={onClick}
+            style={{
+                padding: '0.6rem 1.5rem',
+                fontSize: '0.9rem',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                ...(active ? activeStyle : inactiveStyle)
+            }}
+        >
+            {label}
+        </button>
+    );
 }
+
 function BerthButton({ label, active, onClick }) {
-    return <button onClick={onClick} style={{ padding: '0.75rem 1.5rem', fontSize: '0.95rem', fontWeight: '600', borderRadius: '6px', border: active ? '1px solid #0369a1' : '1px solid #cbd5e1', background: active ? '#e0f2fe' : 'white', color: active ? '#0369a1' : '#64748b', cursor: 'pointer', transition: 'all 0.2s' }}>{label}</button>;
+    const activeStyle = {
+        background: '#1e3a8a',
+        color: '#fbbf24', // Amber 400
+        border: '1px solid #f59e0b', // Amber 500
+        fontWeight: 'bold',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    };
+    const inactiveStyle = {
+        background: 'white',
+        color: '#64748b',
+        border: '1px solid #e2e8f0'
+    };
+
+    return (
+        <button
+            onClick={onClick}
+            style={{
+                padding: '0.4rem 1rem',
+                fontSize: '0.8rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                minWidth: '80px',
+                ...(active ? activeStyle : inactiveStyle)
+            }}
+        >
+            {label}
+        </button>
+    );
 }
+
 function MovementBtn({ label, type, current, onClick }) {
     const active = current === type;
     const color = type === 'arrival' ? '#15803d' : '#b91c1c';

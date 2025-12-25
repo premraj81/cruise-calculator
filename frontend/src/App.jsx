@@ -67,7 +67,7 @@ function App() {
     { id: 'windows', label: 'Cruise Ship Window' },
     { id: 'berth', label: 'Beam Distance' },
     { id: 'tides', label: 'Tide Prediction Graph' },
-    { id: 'other-vessels', label: 'Other Vessel Window' }
+    { id: 'other-vessels', label: 'Environmental Parameters & UKC' }
   ];
 
   return (
@@ -79,8 +79,18 @@ function App() {
           </span>
         </h1>
         {/* Dynamic Title based on View? Or just simpler header? */}
-        <h2 style={{ margin: '0', color: '#64748b', fontWeight: '700', fontSize: '2rem' }}>
-          Operations Dashboard
+        <h2 style={{
+          margin: '0.25rem 0 0 0',
+          background: 'linear-gradient(to right, #92400e, #d97706, #92400e)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          fontWeight: '400',
+          fontSize: '1.8rem',
+          textTransform: 'uppercase',
+          letterSpacing: '2px',
+          fontFamily: '"Playfair Display", serif'
+        }}>
+          Marine Operation Tool
         </h2>
 
         <button
