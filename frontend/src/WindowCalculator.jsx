@@ -60,6 +60,15 @@ function WindowCalculator({ shipType, setShipType, movement, setMovement, dates,
         const date = dates[index];
         if (!date) return;
 
+        // Check if date > 2028
+        if (new Date(date) > new Date('2028-12-31')) {
+            setResults(prev => ({
+                ...prev,
+                [index]: { error: "Warning: No tidal data available beyond 2028." }
+            }));
+            return;
+        }
+
         if (loadingTides) {
             alert("Tide database still loading...");
             return;

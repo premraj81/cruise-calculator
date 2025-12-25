@@ -267,6 +267,11 @@ function OtherVesselCalculator() {
     useEffect(() => {
         if (!arrivalDate || !arrivalTime || tideData.length === 0) return;
 
+        if (new Date(arrivalDate) > new Date('2028-12-31')) {
+            setTideHeight("N/A (Ends 2028)");
+            return;
+        }
+
         const inputDateTime = new Date(`${arrivalDate}T${arrivalTime}`);
         const inputTime = inputDateTime.getTime();
 

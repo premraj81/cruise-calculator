@@ -372,6 +372,14 @@ const TideChart = () => {
                     <button onClick={() => shiftTime(24)} style={{ padding: '4px 10px', cursor: 'pointer', background: '#444', color: '#fff', border: 'none', borderRadius: '4px' }}>+24h &gt;</button>
                 </div>
 
+                {/* Date Warning */}
+                {selectedDateObj > new Date('2028-12-31') && (
+                    <div style={{ padding: '5px 15px', background: '#b91c1c', color: 'white', fontWeight: 'bold', borderRadius: '4px', fontSize: '0.9rem', marginBottom: '10px' }}>
+                        ⚠️ Warning: No tidal data available beyond 2028.
+                    </div>
+                )}
+
+
                 {/* Sun Times & Tide Status */}
                 <div style={{ display: 'flex', gap: '20px', marginBottom: '10px', fontSize: '0.9rem', color: '#ccc', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
