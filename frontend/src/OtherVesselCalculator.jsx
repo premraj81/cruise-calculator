@@ -5,7 +5,7 @@ import { UKCColumn } from './components/UKCColumn';
 import TideDetails from './components/TideDetails';
 
 function OtherVesselCalculator() {
-    const [selectedPort, setSelectedPort] = useState(null);
+    const [selectedPort, setSelectedPort] = useState('chalmers');
     const [selectedBerth, setSelectedBerth] = useState(null);
 
     // Inputs
@@ -21,9 +21,9 @@ function OtherVesselCalculator() {
     const [tugArihi, setTugArihi] = useState(false);
 
     // Depths & Tide
-    const [depthChannel, setDepthChannel] = useState('');
-    const [depthBasin, setDepthBasin] = useState('');
-    const [depthBerth, setDepthBerth] = useState('');
+    const [depthChannel, setDepthChannel] = useState('14.5');
+    const [depthBasin, setDepthBasin] = useState('13.5');
+    const [depthBerth, setDepthBerth] = useState('13.5');
     const [tideHeight, setTideHeight] = useState(''); // HOT
 
     const tide = Number(tideHeight) || 0;
