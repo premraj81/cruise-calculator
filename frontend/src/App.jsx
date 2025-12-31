@@ -71,7 +71,7 @@ function App() {
   ];
 
   return (
-    <div className="App">
+    <div className="App" style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#f8fafc' }}>
       <header className="app-header">
         <h1 style={{ marginBottom: '0.5rem', marginTop: 0 }}>
           <span style={{ fontSize: '1.5rem', color: '#1e3a8a', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase' }}>
@@ -136,7 +136,7 @@ function App() {
         ))}
       </div>
 
-      <div className="content-area" style={{ width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="content-area" style={{ flex: 1, width: '100%', maxWidth: '1200px', margin: '0 auto', overflow: currentView === 'tides' ? 'hidden' : 'auto', padding: '0 1rem 1rem 1rem' }}>
         {currentView === 'windows' && (
           <WindowCalculator
             shipType={shipType} setShipType={setShipType}

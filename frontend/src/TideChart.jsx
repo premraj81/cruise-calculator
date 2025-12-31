@@ -318,7 +318,7 @@ const TideChart = () => {
     return (
         <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
-            width: '100%', height: 'calc(100vh - 180px)', // Adjust height to fit below header/tabs
+            width: '100%', height: '100%',
             background: '#242424', borderRadius: '12px', overflow: 'hidden',
             boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
         }}>

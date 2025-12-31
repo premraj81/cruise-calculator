@@ -21,7 +21,7 @@ function OtherVesselCalculator() {
     const [tugArihi, setTugArihi] = useState(false);
 
     // Depths & Tide
-    const [depthChannel, setDepthChannel] = useState('14.5');
+    const [depthChannel, setDepthChannel] = useState('13.5');
     const [depthBasin, setDepthBasin] = useState('13.5');
     const [depthBerth, setDepthBerth] = useState('13.5');
     const [tideHeight, setTideHeight] = useState(''); // HOT
@@ -111,9 +111,9 @@ function OtherVesselCalculator() {
         setSelectedPort(port);
         setSelectedBerth(null);
         if (port === 'chalmers') {
-            setDepthChannel('14.5');
+            setDepthChannel('13.5');
             setDepthBasin('13.5');
-            setDepthBerth('13.5');
+            setDepthBerth('13.9'); // Default to CT depth
             setVesselType('container');
         } else {
             setDepthChannel('8.5');
@@ -126,8 +126,9 @@ function OtherVesselCalculator() {
     const handleBerthSelect = (berth) => {
         setSelectedBerth(berth);
         if (selectedPort === 'chalmers') {
-            if (berth === 'beach') { setDepthBerth('5.5'); }
-            else { setDepthBerth('13.5'); } // CT/MP
+            if (berth === 'beach') { setDepthBerth('11.5'); }
+            else if (berth === 'mp') { setDepthBerth('14.0'); }
+            else { setDepthBerth('13.9'); } // CT
         } else if (selectedPort === 'dunedin') {
             switch (berth) {
                 case 'xy': setDepthBerth('7.7'); break;
