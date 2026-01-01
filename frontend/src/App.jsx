@@ -136,7 +136,7 @@ function App() {
         ))}
       </div>
 
-      <div className="content-area" style={{ flex: 1, width: '100%', maxWidth: '1200px', margin: '0 auto', overflow: currentView === 'tides' ? 'hidden' : 'auto', padding: '0 1rem 1rem 1rem' }}>
+      <div className="content-area" style={{ flex: 1, width: '100%', maxWidth: '1200px', margin: '0 auto', overflow: currentView === 'tides' ? 'hidden' : 'auto', padding: currentView === 'tides' ? '0' : '0 1rem 1rem 1rem' }}>
         {currentView === 'windows' && (
           <WindowCalculator
             shipType={shipType} setShipType={setShipType}
