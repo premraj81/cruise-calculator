@@ -323,9 +323,9 @@ const TideChart = () => {
             boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
         }}>
             {/* Header / Controls Area */}
-            <div style={{ padding: '10px 20px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#242424', zIndex: 10 }}>
+            <div style={{ padding: '5px 10px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#242424', zIndex: 10 }}>
                 {/* Location Switching Toggle */}
-                <div style={{ display: 'flex', gap: '0', marginBottom: '10px', border: '1px solid #555', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', gap: '0', marginBottom: '5px', border: '1px solid #555', borderRadius: '6px', overflow: 'hidden' }}>
                     <button
                         onClick={() => toggleLocation('pc')}
                         style={{
@@ -354,14 +354,14 @@ const TideChart = () => {
                     </button>
                 </div>
 
-                <h2 style={{ margin: '0 0 10px 0', fontSize: '1.5rem', color: '#e0e0e0' }}>
+                <h2 style={{ margin: '0 0 5px 0', fontSize: '1.25rem', color: '#e0e0e0' }}>
                     {location === 'pc' ? 'Port Chalmers' : 'Dunedin'} Tide Prediction
                 </h2>
 
                 <div style={{
                     display: 'flex',
                     gap: '15px',
-                    marginBottom: '10px',
+                    marginBottom: '5px',
                     alignItems: 'center',
                     backgroundColor: '#333',
                     padding: '6px 15px',
@@ -381,7 +381,7 @@ const TideChart = () => {
 
 
                 {/* Sun Times & Tide Status */}
-                <div style={{ display: 'flex', gap: '20px', marginBottom: '10px', fontSize: '0.9rem', color: '#ccc', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '20px', marginBottom: '5px', fontSize: '0.9rem', color: '#ccc', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                         <span style={{ fontSize: '1.2rem' }}>☀️</span>
                         <span>Sunrise: <strong style={{ color: '#fff' }}>{getSunTimes(selectedDate).sunrise}</strong></span>
