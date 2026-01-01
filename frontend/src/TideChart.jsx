@@ -23,6 +23,7 @@ const TideChart = () => {
     const [brushStart, setBrushStart] = useState(0);
     const [brushEnd, setBrushEnd] = useState(144);
     const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [isFullScreen, setIsFullScreen] = useState(false); // Moved to top
 
     // Fetch Sun Data on Mount
     useEffect(() => {
@@ -313,129 +314,137 @@ const TideChart = () => {
         return null;
     };
 
-    // Modified Return: Remove 'fixed' positioning so it fits in the tab content area.
-    // Instead of full-screen fixed, use a responsive flex container.
+    // State moved to top
+
+    const toggleFullScreen = () => {
+        setIsFullScreen(!isFullScreen);
+    };
+
+    // Modified Return: Supports Full Screen Overlay
     return (
         <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            width: '100%', height: '100%',
-            background: '#242424', borderRadius: '12px', overflow: 'hidden',
+            display: 'flex', flexDirection: 'row', // Horizontal Layout
+            width: isFullScreen ? '100vw' : '100%',
+            height: isFullScreen ? '100vh' : '100%',
+            position: isFullScreen ? 'fixed' : 'relative',
+            top: isFullScreen ? 0 : 'auto',
+            left: isFullScreen ? 0 : 'auto',
+            zIndex: isFullScreen ? 9999 : 1,
+            background: '#242424',
+            borderRadius: isFullScreen ? 0 : '12px',
+            overflow: 'hidden',
             boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
         }}>
-            {/* Header / Controls Area */}
-            <div style={{ padding: '5px 10px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#242424', zIndex: 10 }}>
-                {/* Location Switching Toggle */}
-                <div style={{ display: 'flex', gap: '0', marginBottom: '5px', border: '1px solid #555', borderRadius: '6px', overflow: 'hidden' }}>
-                    <button
-                        onClick={() => toggleLocation('pc')}
-                        style={{
-                            padding: '6px 16px',
-                            cursor: 'pointer',
-                            background: location === 'pc' ? '#4dabf7' : '#333',
-                            color: location === 'pc' ? '#fff' : '#aaa',
-                            border: 'none',
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        Port Chalmers
-                    </button>
-                    <button
-                        onClick={() => toggleLocation('dn')}
-                        style={{
-                            padding: '6px 16px',
-                            cursor: 'pointer',
-                            background: location === 'dn' ? '#4dabf7' : '#333',
-                            color: location === 'dn' ? '#fff' : '#aaa',
-                            border: 'none',
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        Dunedin
-                    </button>
+            {/* Full Screen Toggle Button (Overlay) */}
+            <button
+                onClick={toggleFullScreen}
+                style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    zIndex: 1000,
+                    background: 'rgba(0,0,0,0.5)',
+                    color: '#fff',
+                    border: '1px solid #666',
+                    borderRadius: '4px',
+                    padding: '6px 10px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                }}
+            >
+                {isFullScreen ? 'Exit Full Screen' : '⤢ Full Screen'}
+            </button>
+            {/* LEFT SIDEBAR - Controls & Info */}
+            <div style={{
+                width: '280px',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                padding: '1.5rem 1rem',
+                background: '#1e1e1e', // Slightly darker sidebar
+                borderRight: '1px solid #333',
+                overflowY: 'auto',
+                gap: '1.5rem',
+                alignItems: 'center'
+            }}>
+                {/* 1. Header & Location */}
+                <div style={{ textAlign: 'center', width: '100%' }}>
+                    <h2 style={{ margin: '0 0 1rem 0', fontSize: '1.2rem', color: '#e0e0e0', lineHeight: '1.4' }}>
+                        {location === 'pc' ? 'Port Chalmers' : 'Dunedin'}<br />
+                        <span style={{ fontSize: '0.9rem', color: '#aaa', fontWeight: 'normal' }}>Tide Prediction</span>
+                    </h2>
+
+                    <div style={{ display: 'flex', gap: '0', border: '1px solid #555', borderRadius: '6px', overflow: 'hidden', width: '100%' }}>
+                        <button onClick={() => toggleLocation('pc')} style={{ flex: 1, padding: '8px', cursor: 'pointer', background: location === 'pc' ? '#4dabf7' : '#333', color: location === 'pc' ? '#fff' : '#aaa', border: 'none', fontWeight: 'bold', fontSize: '0.9rem' }}>PC</button>
+                        <button onClick={() => toggleLocation('dn')} style={{ flex: 1, padding: '8px', cursor: 'pointer', background: location === 'dn' ? '#4dabf7' : '#333', color: location === 'dn' ? '#fff' : '#aaa', border: 'none', fontWeight: 'bold', fontSize: '0.9rem' }}>DN</button>
+                    </div>
                 </div>
 
-                <h2 style={{ margin: '0 0 5px 0', fontSize: '1.25rem', color: '#e0e0e0' }}>
-                    {location === 'pc' ? 'Port Chalmers' : 'Dunedin'} Tide Prediction
-                </h2>
-
-                <div style={{
-                    display: 'flex',
-                    gap: '15px',
-                    marginBottom: '5px',
-                    alignItems: 'center',
-                    backgroundColor: '#333',
-                    padding: '6px 15px',
-                    borderRadius: '8px'
-                }}>
-                    <button onClick={() => shiftTime(-24)} style={{ padding: '4px 10px', cursor: 'pointer', background: '#444', color: '#fff', border: 'none', borderRadius: '4px' }}>&lt; -24h</button>
-                    <input type="date" value={selectedDate} onChange={handleDateChange} style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#ffffff', color: '#000000', cursor: 'pointer', fontWeight: 'bold' }} />
-                    <button onClick={() => shiftTime(24)} style={{ padding: '4px 10px', cursor: 'pointer', background: '#444', color: '#fff', border: 'none', borderRadius: '4px' }}>+24h &gt;</button>
+                {/* 2. Date Controls */}
+                <div style={{ display: 'flex', width: '100%', flexDirection: 'column', gap: '0.5rem' }}>
+                    <label style={{ color: '#aaa', fontSize: '0.8rem', fontWeight: 'bold' }}>SELECTED DATE</label>
+                    <div style={{ display: 'flex', gap: '5px' }}>
+                        <button onClick={() => shiftTime(-24)} style={{ padding: '8px', cursor: 'pointer', background: '#333', color: '#fff', border: '1px solid #444', borderRadius: '4px' }}>&lt;</button>
+                        <input type="date" value={selectedDate} onChange={handleDateChange} style={{ flex: 1, padding: '6px', borderRadius: '4px', border: '1px solid #444', backgroundColor: '#333', color: '#fff', textAlign: 'center' }} />
+                        <button onClick={() => shiftTime(24)} style={{ padding: '8px', cursor: 'pointer', background: '#333', color: '#fff', border: '1px solid #444', borderRadius: '4px' }}>&gt;</button>
+                    </div>
+                    {/* Date Warning */}
+                    {selectedDateObj > new Date('2028-12-31') && (
+                        <div style={{ padding: '8px', background: 'rgba(185, 28, 28, 0.2)', border: '1px solid #b91c1c', color: '#fca5a5', borderRadius: '4px', fontSize: '0.8rem', textAlign: 'center' }}>
+                            ⚠️ No data &gt; 2028
+                        </div>
+                    )}
                 </div>
 
-                {/* Date Warning */}
-                {selectedDateObj > new Date('2028-12-31') && (
-                    <div style={{ padding: '5px 15px', background: '#b91c1c', color: 'white', fontWeight: 'bold', borderRadius: '4px', fontSize: '0.9rem', marginBottom: '10px' }}>
-                        ⚠️ Warning: No tidal data available beyond 2028.
+                {/* 3. Sun & Tide Status */}
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.8rem', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#ccc' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>☀️ Rise <strong style={{ color: '#fff' }}>{getSunTimes(selectedDate).sunrise}</strong></span>
                     </div>
-                )}
-
-
-                {/* Sun Times & Tide Status */}
-                <div style={{ display: 'flex', gap: '20px', marginBottom: '5px', fontSize: '0.9rem', color: '#ccc', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <span style={{ fontSize: '1.2rem' }}>☀️</span>
-                        <span>Sunrise: <strong style={{ color: '#fff' }}>{getSunTimes(selectedDate).sunrise}</strong></span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <span style={{ fontSize: '1.2rem' }}>🌙</span>
-                        <span>Sunset: <strong style={{ color: '#fff' }}>{getSunTimes(selectedDate).sunset}</strong></span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#ccc' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>🌙 Set <strong style={{ color: '#fff' }}>{getSunTimes(selectedDate).sunset}</strong></span>
                     </div>
 
                     {tideStatus && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginLeft: '10px', paddingLeft: '15px', borderLeft: '1px solid #555' }}>
-                            <span style={{ color: tideColor, fontWeight: 'bold', border: `1px solid ${tideColor}`, padding: '2px 8px', borderRadius: '4px' }}>
-                                {tideStatus}
-                            </span>
+                        <div style={{ marginTop: '0.5rem', textAlign: 'center', padding: '4px', border: `1px solid ${tideColor}`, borderRadius: '4px', color: tideColor, fontWeight: 'bold', fontSize: '0.9rem' }}>
+                            {tideStatus}
                         </div>
                     )}
-
                     {isStrongCurrent && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <span style={{ color: '#ef4444', fontWeight: 'bold', border: '1px solid #ef4444', padding: '2px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                ⚠️ Strong Currents
-                            </span>
+                        <div style={{ textAlign: 'center', padding: '4px', border: '1px solid #ef4444', borderRadius: '4px', color: '#ef4444', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                            ⚠️ Strong Current
                         </div>
                     )}
                 </div>
 
-                {/* Compact Daily Summary */}
-                <div style={{
-                    width: '100%',
-                    maxWidth: '600px',
-                    backgroundColor: 'transparent',
-                    padding: '0',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'center',
-                    gap: '15px',
-                    fontSize: '0.9rem'
-                }}>
+                {/* 4. HW / LW Events List */}
+                <div style={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <label style={{ color: '#aaa', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '0.2rem' }}>TIDE EVENTS ({format(selectedDateObj, 'dd MMM')})</label>
                     {dailyEvents.length > 0 ? (
                         dailyEvents.map((ev, i) => {
                             const isHigh = ev.height >= 1.0;
                             return (
-                                <div key={i} style={{ display: 'flex', gap: '6px', alignItems: 'center', background: '#333', padding: '4px 8px', borderRadius: '4px' }}>
-                                    <span style={{ color: '#aaa' }}>{format(new Date(ev.timestamp), 'HH:mm')}</span>
-                                    <strong style={{ color: isHigh ? '#4ade80' : '#f87171' }}>{isHigh ? 'HW' : 'LW'}</strong>
-                                    <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{ev.height.toFixed(2)}m</span>
+                                <div key={i} style={{
+                                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                    background: '#2a2a2a', padding: '10px 12px', borderRadius: '6px',
+                                    borderLeft: `4px solid ${isHigh ? '#4ade80' : '#f87171'}`
+                                }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ color: '#fff', fontWeight: 'bold' }}>{format(new Date(ev.timestamp), 'HH:mm')}</span>
+                                        <span style={{ fontSize: '0.75rem', color: isHigh ? '#4ade80' : '#f87171' }}>{isHigh ? 'High Water' : 'Low Water'}</span>
+                                    </div>
+                                    <span style={{ fontSize: '1.2rem', color: '#fff', fontWeight: 'bold' }}>{ev.height.toFixed(2)}m</span>
                                 </div>
                             )
                         })
                     ) : (
-                        <span style={{ color: '#888' }}>No major tide events on this day.</span>
+                        <div style={{ color: '#666', fontStyle: 'italic', textAlign: 'center', marginTop: '1rem' }}>No events.</div>
                     )}
                 </div>
             </div>
+
+            {/* RIGHT MAIN - Chart Area */}
+            {/* Removed internal padding/width constraints to let Flex handle it */}
 
             {/* Chart Area */}
             <div style={{ width: '100%', flex: 1, minHeight: 0 }}>
