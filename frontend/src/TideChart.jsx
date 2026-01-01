@@ -134,13 +134,12 @@ const TideChart = () => {
     const jumpToDate = (dateObj, dataset = interpolatedData) => {
         if (dataset.length === 0) return;
 
-        const dayStart = startOfDay(dateObj).getTime();
-        const startIdx = findIndexForTime(dayStart, dataset);
+        const currentStart = subHours(startOfDay(dateObj), 6).getTime();
+        const startIdx = findIndexForTime(currentStart, dataset);
 
-        // Window = 3 Days (72 Hours)
-        const viewDurationHours = 72;
-        const dayEnd = addHours(dateObj, viewDurationHours).getTime();
-        const endIdx = findIndexForTime(dayEnd, dataset);
+        // Window: -6h to +48h (covering Today + Tomorrow + previous evening)
+        const currentEnd = addHours(startOfDay(dateObj), 48).getTime();
+        const endIdx = findIndexForTime(currentEnd, dataset);
 
         // ensure range
         const actualStart = Math.max(0, startIdx);
