@@ -216,8 +216,8 @@ const TideChart = () => {
         return { sunrise: "06:00", sunset: "21:00" };
     };
 
-    // Calculate Twilight / Night Intervals for gradual shading
-    const twilightIntervals = useMemo(() => {
+    // Calculate Daylight Intervals (Sunrise -> Sunset) to shade them Grey
+    const daylightIntervals = useMemo(() => {
         if (interpolatedData.length === 0 || brushStart >= brushEnd) return [];
 
         const startDate = new Date(interpolatedData[brushStart].timestamp);
@@ -230,37 +230,19 @@ const TideChart = () => {
 
         while (current <= end) {
             const dStr = format(current, 'yyyy-MM-dd');
-            // Try to find exact sun data, else default
-            const sInfo = getSunTimes(dStr); // Use helper to get mapped data if needed
+            const sInfo = getSunTimes(dStr);
             const [srH, srM] = sInfo.sunrise.split(':').map(Number);
             const [ssH, ssM] = sInfo.sunset.split(':').map(Number);
 
-            // Sunset logic
-            const ssTime = setMinutes(setHours(current, ssH), ssM);
-            const nextDay = addDays(current, 1);
-            // Sunrise next day 
-            const ndStr = format(nextDay, 'yyyy-MM-dd');
-            const ndInfo = getSunTimes(ndStr);
-            const [nsrH, nsrM] = ndInfo.sunrise.split(':').map(Number);
-            const nsrTime = setMinutes(setHours(nextDay, nsrH), nsrM);
+            const sunriseTime = setMinutes(setHours(current, srH), srM);
+            const sunsetTime = setMinutes(setHours(current, ssH), ssM);
 
-            // SUNSET TRANSITION (Sunset -> Sunset + 1h)
-            shadedBlocks.push({ x1: ssTime.getTime(), x2: addMinutes(ssTime, 20).getTime(), opacity: 0.1 });
-            shadedBlocks.push({ x1: addMinutes(ssTime, 20).getTime(), x2: addMinutes(ssTime, 40).getTime(), opacity: 0.2 });
-            shadedBlocks.push({ x1: addMinutes(ssTime, 40).getTime(), x2: addMinutes(ssTime, 60).getTime(), opacity: 0.3 });
-
-            // DEEP NIGHT (Sunset + 1h -> Sunrise - 1h)
+            // Daylight Block (Sunrise -> Sunset)
             shadedBlocks.push({
-                x1: addMinutes(ssTime, 60).getTime(),
-                x2: addMinutes(nsrTime, -60).getTime(),
-                opacity: 0.45
+                x1: sunriseTime.getTime(),
+                x2: sunsetTime.getTime(),
+                opacity: 0.15 // Light Grey Overlay
             });
-
-            // SUNRISE TRANSITION (Sunrise - 1h -> Sunrise)
-            const srStart = addMinutes(nsrTime, -60);
-            shadedBlocks.push({ x1: srStart.getTime(), x2: addMinutes(srStart, 20).getTime(), opacity: 0.3 });
-            shadedBlocks.push({ x1: addMinutes(srStart, 20).getTime(), x2: addMinutes(srStart, 40).getTime(), opacity: 0.2 });
-            shadedBlocks.push({ x1: addMinutes(srStart, 40).getTime(), x2: nsrTime.getTime(), opacity: 0.1 });
 
             current = addDays(current, 1);
         }
@@ -281,10 +263,10 @@ const TideChart = () => {
     let tideColor = "#ccc";
     if (dayAvgHeight >= 1.80) {
         tideStatus = "Spring Tide";
-        tideColor = "#4ade80";
+        tideColor = "#16a34a"; // Green-600
     } else if (dayAvgHeight > 0) {
         tideStatus = "Neap Tide";
-        tideColor = "#facc15";
+        tideColor = "#ca8a04"; // Yellow-600 (Darker for light theme)
     }
 
     const isStrongCurrent = dayAvgHeight > 2.20;
@@ -458,12 +440,12 @@ const TideChart = () => {
                                 <stop offset="95%" stopColor="#4dabf7" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        {twilightIntervals.map((block, i) => (
+                        {daylightIntervals.map((block, i) => (
                             <ReferenceArea
                                 key={i}
                                 x1={block.x1}
                                 x2={block.x2}
-                                fill="black"
+                                fill="#9ca3af"
                                 fillOpacity={block.opacity}
                                 strokeOpacity={0}
                             />
