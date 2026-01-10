@@ -41,7 +41,7 @@ const BASIN_COORDS = getCoordinates();
 function BerthCalculator() {
     // Config
     const [ctShip, setCtShip] = useState({
-        name: 'Ovation of the Seas',
+        name: 'Spirit of Auckland',
         length: 254,
         beam: 32.2,
         sternPos: 280,
@@ -51,11 +51,11 @@ function BerthCalculator() {
 
     const [beachShip, setBeachShip] = useState({
         active: true,
-        name: 'Beach Ship',
-        length: 200,
-        beam: 30,
-        sternPos: 50,
-        sideToWharf: 'port',
+        name: 'Ovation of Seas',
+        length: 349.5,
+        beam: 40,
+        sternPos: 365,
+        sideToWharf: 'starboard',
         color: '#f59e0b'
     });
 
